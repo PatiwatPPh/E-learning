@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <title>E-learning</title>
+  </head>
+  <body>
+    <h1>E-learning</h1>
+    <div class="container">
+ 
+<div class="row">
+    <div class="col-md-12">
+        <input type="checkbox" id="chk1">
+        <label for="vehicle1"> Video 1</label><br>
+        <input type="checkbox" id="chk2">
+        <label for="vehicle1"> Video 2</label><br>
+        <input type="checkbox" id="chk3">
+        <label for="vehicle1"> Video 3</label><br>
+        <input type="checkbox" id="chk4">
+        <label for="vehicle1"> Video 4</label><br>
+        <!-- <button onclick="clearSession()">clear</button> -->
+    </div>
+    <div class="col-md-6">
+    <video width="480" height="400" controls="true" poster="" id="video1" value="1">
+        <source type="video/mp4" src="video/1.mp4"></source>
+    </video>
+    
+
+</div>
+    <script>
+function clearSession(){
+    sessionStorage.setItem("vdo1", null);
+}
+var video = document.getElementById("video1");
+var data = {"id":1,"duration":0,"isSuccess":false};
+
+var jsStr = sessionStorage.getItem("vdo1");
+console.log("jsStr", jsStr);
+var ck = jsStr !== '' ? JSON.parse(jsStr) : null;
+
+
+if(ck !== null){
+    data = ck;
+    if(data.isSuccess == true){
+        document.getElementById("chk1").checked = true;
+    }
+}
+console.log("data",data)
+var timeStarted = -1;
+var timePlayed = 0;
+var duration = data.duration;
+// If video metadata is laoded get duration
+if(video.readyState > 0)
+  getDuration.call(video);
+//If metadata not loaded, use event to get it
+else
+{
+  video.addEventListener('loadedmetadata', getDuration);
+}
+// remember time user started the video
+function videoStartedPlaying() {
+  timeStarted = new Date().getTime()/1000;
+}
+function videoStoppedPlaying(event) {
+  // Start time less then zero means stop event was fired vidout start event
+  if(timeStarted>0) {
+    var playedFor = new Date().getTime()/1000 - timeStarted;
+    timeStarted = -1;
+    // add the new ammount of seconds played
+    timePlayed+=playedFor;
+  }
+  // Count as complete only if end of video was reached
+  if(timePlayed>=duration && event.type=="ended") {
+    document.getElementById("chk1").checked = true;
+    duration = video.duration;
+    data.duration =duration;
+    data.isSuccess = true; 
+    var json = JSON.stringify(data);
+    sessionStorage.setItem("vdo1", json);
+  }
+}
+
+function getDuration() {
+  duration = video.duration;
+  data.duration =duration;
+  var json = JSON.stringify(data);
+  sessionStorage.setItem("vdo1", json);
+}
+
+video.addEventListener("play", videoStartedPlaying);
+video.addEventListener("playing", videoStartedPlaying);
+
+video.addEventListener("ended", videoStoppedPlaying);
+video.addEventListener("pause", videoStoppedPlaying);
+    </script>
+<style>
+#status span.status {
+  display: none;
+  font-weight: bold;
+}
+span.status.complete {
+  color: green;
+}
+span.status.incomplete {
+  color: red;
+}
+#status.complete span.status.complete {
+  display: inline;
+}
+#status.incomplete span.status.incomplete {
+  display: inline;
+}
+    </style>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+  </body>
+</html>
